@@ -47,7 +47,26 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
+		// Original (CSRF enabled by default):
+		// http.authorizeRequests()
+		// 	.antMatchers("/").authenticated()
+		// 	.antMatchers("/admin/**").hasRole("ADMIN") //user with student or teacher role cannot access url starting with admin
+		// 	.antMatchers("/student/**").hasRole("STUDENT")
+		// 	.antMatchers("/teacher/**").hasRole("TEACHER")
+		// 	.and()
+		// 	.formLogin()
+		// 		.loginPage("/showLoginPage") //custom login page is generated in LoginController
+		// 		.loginProcessingUrl("/authenticateTheUser") //authenticateTheUser is automatically done by spring boot
+		// 		.successHandler(customAuthenticationSuccessHandler) //after login, user is redirected to home page depending on the role.
+		// 		.permitAll()
+		// 	.and()
+		// 	.logout().permitAll()
+		// 	.and()
+		// 	.exceptionHandling().accessDeniedPage("/access-denied"); //simple access denied mapping defined in LoginController in case of user
+		// 	                                                             //tries to access a page without the proper authority
+
+		http.csrf().disable()
+			.authorizeRequests()
 			.antMatchers("/").authenticated()
 			.antMatchers("/admin/**").hasRole("ADMIN") //user with student or teacher role cannot access url starting with admin
 			.antMatchers("/student/**").hasRole("STUDENT")
@@ -63,7 +82,7 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.exceptionHandling().accessDeniedPage("/access-denied"); //simple access denied mapping defined in LoginController in case of user
 		                                                             //tries to access a page without the proper authority
-				
+
 	}
 	
 	
