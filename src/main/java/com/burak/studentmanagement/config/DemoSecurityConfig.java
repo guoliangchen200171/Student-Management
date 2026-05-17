@@ -9,19 +9,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.burak.studentmanagement.service.StudentService;
-import com.burak.studentmanagement.service.TeacherService;
 
 @Configuration
 @EnableWebSecurity
 public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-	private StudentService studentService;
-	
-	@Autowired
-	private TeacherService teacherService;
-	
+	private CompositeUserDetailsService compositeUserDetailsService;
 	
 	@Autowired
 	private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
@@ -31,10 +25,7 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
 		//student and teacher login credentials are stored in mysql db, while admin username and password defined below as in-memory
 		
 		auth
-        	.userDetailsService(studentService)
-        	.passwordEncoder(passwordEncoder());
-		auth
-        	.userDetailsService(teacherService)
+        	.userDetailsService(compositeUserDetailsService)
         	.passwordEncoder(passwordEncoder());
 		
 		auth.inMemoryAuthentication()  //admin password username

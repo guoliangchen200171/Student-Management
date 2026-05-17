@@ -69,6 +69,11 @@ public class RegistrationController {
 			}
 					
 			Role role = roleDao.findRoleByName(roleName);
+			if (role == null) {
+				theModel.addAttribute("userDto", new UserDto());
+				theModel.addAttribute("registrationError", "Role not found in database. Restart the application and try again.");
+				return "registration/registration-form";
+			}
 			user.setRole(role);
 			studentService.save(user); //save() method converts UserDto to Student and saves it in db
 		} else { //teacher role
@@ -83,6 +88,11 @@ public class RegistrationController {
 			}
 					
 			Role role = roleDao.findRoleByName(roleName);
+			if (role == null) {
+				theModel.addAttribute("userDto", new UserDto());
+				theModel.addAttribute("registrationError", "Role not found in database. Restart the application and try again.");
+				return "registration/registration-form";
+			}
 			user.setRole(role);
 			teacherService.save(user);
 		}

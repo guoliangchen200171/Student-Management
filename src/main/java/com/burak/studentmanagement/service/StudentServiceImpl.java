@@ -5,6 +5,7 @@ package com.burak.studentmanagement.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,9 @@ public class StudentServiceImpl implements StudentService {
 	
 	@Autowired 
 	private RoleDao roleDao;
-	
+
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional
@@ -49,7 +52,7 @@ public class StudentServiceImpl implements StudentService {
 	public void save(UserDto userDto) {
 		Student student = new Student();
 		student.setUserName(userDto.getUserName());
-		student.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
+		student.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		student.setFirstName(userDto.getFirstName());
 		student.setLastName(userDto.getLastName());
 		student.setEmail(userDto.getEmail());		
@@ -66,6 +69,9 @@ public class StudentServiceImpl implements StudentService {
 		if (student == null) {
 			throw new UsernameNotFoundException("Invalid username or password.");
 		}
+		if (student.getRole() == null) {
+			throw new UsernameNotFoundException("Invalid username or password.");
+		}
 		Collection<Role> role = new ArrayList<>();
 		role.add(student.getRole());
 		return new org.springframework.security.core.userdetails.User(student.getUserName(), student.getPassword(),
@@ -73,7 +79,10 @@ public class StudentServiceImpl implements StudentService {
 	}
 	
 	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+		return roles.stream()
+				.filter(Objects::nonNull)
+				.map(role -> new SimpleGrantedAuthority(role.getName()))
+				.collect(Collectors.toList());
 	}
 
 	@Override

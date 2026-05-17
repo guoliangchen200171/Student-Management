@@ -31,4 +31,10 @@ public class RoleDaoImpl implements RoleDao {
 		
 	}
 
+	@Override
+	public void save(Role role) {
+		Session session = entityManager.unwrap(Session.class);
+		session.saveOrUpdate(role);
+	}
+
 }
